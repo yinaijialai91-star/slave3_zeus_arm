@@ -14,7 +14,7 @@
 #define SLAVE3_ZEUS_ARM_STS3215_ID 0x410  // 万能手腕
 #define SLAVE4_SQUID_ARM_ID 0x110         // いかさん
 #define SLAVE5_MARKER_ARM_ID 0x210        // マーカー
-#define SLAVE6_ZEUS_ARM_SHOUKOU_ID 0x150  // 万能手腕昇降
+#define SLAVE6_ZEUS_ARM_SHOUKOU_ID 0x410  // 万能手腕昇降
 #define SLAVEX_BUTSUDAN_LED_ID 0x115      // 仏壇
 
 #define SERVO_FIRST 2048
@@ -111,18 +111,18 @@ void motor_control() {
           st.RegWritePosEx(2, ARM_ID_2_HANASU, 1500);
           st.RegWritePosEx(3, ARM_ID_3_HANASU, 1500);
           st.RegWriteAction();
-          send(SLAVE6_ZEUS_ARM_SHOUKOU_ID, 4, 1, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA);  //それっぽいとこ
+          send(SLAVE6_ZEUS_ARM_SHOUKOU_ID, 1, 4, 1, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA);  //それっぽいとこ
           break;
 
         case 3:
-          send(SLAVE6_ZEUS_ARM_SHOUKOU_ID, 2, data[2] == 0 ? 1 : 2, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA);  //高さを下げる
+          send(SLAVE6_ZEUS_ARM_SHOUKOU_ID, 1, 2, data[2] == 0 ? 1 : 2, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA);  //高さを下げる
           vTaskDelay(pdMS_TO_TICKS(1000));
           st.RegWritePosEx(1, data[2] == 0 ? ARM_ID_1_TSUKAMU : ARM_ID_1_TSUKAMU_BASEBALL, 1500);
           st.RegWritePosEx(2, data[2] == 0 ? ARM_ID_2_TSUKAMU : ARM_ID_2_TSUKAMU_BASEBALL, 1500);
           st.RegWritePosEx(3, data[2] == 0 ? ARM_ID_3_TSUKAMU : ARM_ID_3_TSUKAMU_BASEBALL, 1500);
           st.RegWriteAction();
           vTaskDelay(pdMS_TO_TICKS(500));
-          send(SLAVE6_ZEUS_ARM_SHOUKOU_ID, 4, 1, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA);  //それっぽいとこ
+          send(SLAVE6_ZEUS_ARM_SHOUKOU_ID, 1, 4, 1, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA);  //それっぽいとこ
           vTaskDelay(pdMS_TO_TICKS(500));
           st.RegWritePosEx(6, NEMOTO_YOKO, 1500);
           st.RegWritePosEx(4, LEG_ID_1_OUT_CENTER, 1500);
@@ -131,7 +131,7 @@ void motor_control() {
           break;
 
         case 4:  //設置位置に上げる
-          send(SLAVE6_ZEUS_ARM_SHOUKOU_ID, 3, data[2] == 0 ? 1 : 2, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA);
+          send(SLAVE6_ZEUS_ARM_SHOUKOU_ID, 1, 3, data[2] == 0 ? 1 : 2, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA);
           break;
 
         case 5:
