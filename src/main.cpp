@@ -123,7 +123,7 @@ void motor_control()
 
     case 3:
       send(SLAVE6_ZEUS_ARM_SHOUKOU_ID, 1, 2, data[2] == 0 ? 1 : 2, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA); // 高さを下げる
-      vTaskDelay(pdMS_TO_TICKS(1000));
+      vTaskDelay(pdMS_TO_TICKS(700));
       st.RegWritePosEx(1, data[2] == 0 ? ARM_ID_1_TSUKAMU : ARM_ID_1_TSUKAMU_BASEBALL, 1500);
       st.RegWritePosEx(2, data[2] == 0 ? ARM_ID_2_TSUKAMU : ARM_ID_2_TSUKAMU_BASEBALL, 1500);
       st.RegWritePosEx(3, data[2] == 0 ? ARM_ID_3_TSUKAMU : ARM_ID_3_TSUKAMU_BASEBALL, 1500);
@@ -227,7 +227,7 @@ void motor_control()
     st.RegWriteAction();
     break;
 
-  case 12: 
+  case 12:
     send(SLAVE6_ZEUS_ARM_SHOUKOU_ID, 1, 3, 3, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA);
     break;
 
@@ -315,6 +315,34 @@ void loop()
       Serial.printf("ID = %x, data1 = %d, data2 = %d, data3 = %d, data4 = %d, data5 = %d, data6 = %d, data7 = %d, data8 = %d\n", ID, data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7]);
 
       motor_control();
+    }
+  }
+
+  twai_status_info_t status_info;
+
+  // ステータス情報を取得
+  esp_err_t ret = twai_get_status_info(&status_info);
+
+  // state が TWAI_STATE_BUS_OFF かどうか判定
+  if (status_info.state == TWAI_STATE_STOPPED || status_info.state == TWAI_STATE_BUS_OFF)
+  {
+    Serial.println("バスがオフです。リカバリを開始します");
+
+    ret = twai_initiate_recovery();
+    if (ret != ESP_OK)
+    {
+      Serial.printf("リカバリ開始失敗: %s\n", esp_err_to_name(ret));
+    }
+    Serial.printf("リカバリの開始に成功しました。\n");
+
+    ret = twai_start();
+    if (ret == ESP_OK)
+    {
+      Serial.println("CANドライバの再起動に成功しました");
+    }
+    else
+    {
+      Serial.printf("再スタート失敗: %s\n", esp_err_to_name(ret));
     }
   }
 
